@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blogdown on My First Website</title>
+    <link>/tags/blogdown/</link>
+    <description>Recent content in Blogdown on My First Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 23 Oct 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/blogdown/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>My First Post</title>
+      <link>/2018/10/23/my-first-post/</link>
+      <pubDate>Tue, 23 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/23/my-first-post/</guid>
+      <description>Ridge and Lasso Packages library(ISLR) library(tidyverse) library(glmnet)  sampling Hitters &amp;lt;- na.omit(Hitters) x &amp;lt;- model.matrix(Salary ~ ., Hitters)[, -1] y &amp;lt;- Hitters$Salary set.seed(1) train &amp;lt;- sample(1:nrow(x), nrow(x) / 2) test &amp;lt;- (-train) y.test &amp;lt;- y[test]  ridge regression grid &amp;lt;- 10 ^ seq(10, -2, length = 100) ridge.mod &amp;lt;- glmnet(x, y, alpha = 0, lambda = grid) plot(ridge.mod, main = &amp;quot;The ridge&amp;quot;)  the lasso lasso.mod &amp;lt;- glmnet(x[train, ], y[train], alpha = 1, lambda = grid) plot(lasso.</description>
+    </item>
+    
+  </channel>
+</rss>

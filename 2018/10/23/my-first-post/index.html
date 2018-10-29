@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.47.1" />
+
+
+<title>My First Post - My First Website</title>
+<meta property="og:title" content="My First Post - My First Website">
+
+
+
+  
+
+
+
+
+
+
+<link rel="icon" href="/images/" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/main.css" media="all">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather:400|Lato:400,400italic,700">
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/danke.png" 
+         width="50" 
+         height="50" 
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/Wangyazhu16">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">1 min read</span>
+    
+
+    <h1 class="article-title">My First Post</h1>
+
+    
+    <span class="article-date">October 23, 2018</span>
+    
+
+    <div class="article-content">
+      <div id="ridge-and-lasso" class="section level2">
+<h2>Ridge and Lasso</h2>
+<div id="packages" class="section level4">
+<h4>Packages</h4>
+<pre class="r"><code>library(ISLR)
+library(tidyverse)
+library(glmnet)</code></pre>
+</div>
+<div id="sampling" class="section level4">
+<h4>sampling</h4>
+<pre class="r"><code>Hitters &lt;- na.omit(Hitters)
+x &lt;- model.matrix(Salary ~ ., Hitters)[, -1]
+y &lt;- Hitters$Salary
+set.seed(1)
+train &lt;- sample(1:nrow(x), nrow(x) / 2)
+test &lt;- (-train)
+y.test &lt;- y[test]</code></pre>
+</div>
+<div id="ridge-regression" class="section level4">
+<h4>ridge regression</h4>
+<pre class="r"><code>grid &lt;- 10 ^ seq(10, -2, length = 100)
+ridge.mod &lt;- glmnet(x, y, alpha = 0, lambda = grid)
+plot(ridge.mod, main = &quot;The ridge&quot;)</code></pre>
+<p><img src="/post/2018-10-23-my-first-post_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="the-lasso" class="section level4">
+<h4>the lasso</h4>
+<pre class="r"><code>lasso.mod &lt;- glmnet(x[train, ], y[train], alpha = 1, lambda = grid)
+plot(lasso.mod, main = &quot;The lasso&quot;)</code></pre>
+<p><img src="/post/2018-10-23-my-first-post_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="cross-validation" class="section level4">
+<h4>cross-validation</h4>
+<pre class="r"><code>set.seed(1)
+cv.out &lt;- cv.glmnet(x[train, ], y[train], alpha = 1)
+plot(cv.out)</code></pre>
+<p><img src="/post/2018-10-23-my-first-post_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>bestlam &lt;- cv.out$lambda.min
+lasso.pred &lt;- predict(lasso.mod, s = bestlam, newx = x[test, ])
+mean((lasso.pred - y.test) ^ 2)</code></pre>
+<pre><code>## [1] 100743.4</code></pre>
+</div>
+</div>
+
+    </div>
+  </article>
+
+  
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+
