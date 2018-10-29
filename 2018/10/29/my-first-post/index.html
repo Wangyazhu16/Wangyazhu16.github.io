@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.47.1" />
+
+
+<title>Artificial Neural Network - My First Website</title>
+<meta property="og:title" content="Artificial Neural Network - My First Website">
+
+
+
+  
+
+
+
+
+
+
+<link rel="icon" href="/images/" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/main.css" media="all">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather:400|Lato:400,400italic,700">
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/danke.png" 
+         width="50" 
+         height="50" 
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/Wangyazhu16">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">2 min read</span>
+    
+
+    <h1 class="article-title">Artificial Neural Network</h1>
+
+    
+    <span class="article-date">October 29, 2018</span>
+    
+
+    <div class="article-content">
+      <pre class="r"><code>library(keras)
+# classic mnist dataset
+mnist &lt;- dataset_mnist()
+# training set
+train_images &lt;- mnist$train$x
+train_labels &lt;- mnist$train$y
+# test set
+test_images &lt;- mnist$test$x
+test_labels &lt;- mnist$test$y</code></pre>
+<div id="rescale-so-that-values-are-in-the-0-1-interval" class="section level4">
+<h4>rescale so that values are in the [0, 1] interval</h4>
+<pre class="r"><code>train_images &lt;- array_reshape(train_images, c(60000, 28 * 28))
+train_images &lt;- train_images / 255
+test_images &lt;- array_reshape(test_images, c(10000, 28 * 28))
+test_images &lt;- test_images / 255</code></pre>
+</div>
+<div id="network-architecture" class="section level4">
+<h4>network architecture</h4>
+<pre class="r"><code>network &lt;- keras_model_sequential() %&gt;% 
+    layer_dense(units = 512, activation = &quot;relu&quot;, input_shape = c(28 * 28)) %&gt;% 
+    layer_dense(units = 10, activation = &quot;softmax&quot;)</code></pre>
+</div>
+<div id="complete-our-network" class="section level4">
+<h4>complete our network</h4>
+<pre class="r"><code>network %&gt;% compile(
+    # how the network update itself
+    # https://keras.io/optimizers/
+    optimizer = &quot;rmsprop&quot;,
+    # loss function
+    # https://keras.io/losses/
+    loss = &quot;categorical_crossentropy&quot;,
+    # metrics to monitor 
+    # https://keras.io/metrics/
+    metrics = c(&quot;accuracy&quot;)
+)</code></pre>
+<div id="dummify-our-labels" class="section level5">
+<h5>dummify our labels</h5>
+<pre class="r"><code>train_labels &lt;- to_categorical(train_labels)
+test_labels &lt;- to_categorical(test_labels)</code></pre>
+</div>
+</div>
+<div id="print-summary" class="section level4">
+<h4>print summary</h4>
+<pre class="r"><code>summary(network)</code></pre>
+<pre><code>## ___________________________________________________________________________
+## Layer (type)                     Output Shape                  Param #     
+## ===========================================================================
+## dense_1 (Dense)                  (None, 512)                   401920      
+## ___________________________________________________________________________
+## dense_2 (Dense)                  (None, 10)                    5130        
+## ===========================================================================
+## Total params: 407,050
+## Trainable params: 407,050
+## Non-trainable params: 0
+## ___________________________________________________________________________</code></pre>
+</div>
+<div id="train-the-network" class="section level4">
+<h4>train the network</h4>
+<pre class="r"><code>history &lt;- network %&gt;% fit(train_images, train_labels, epochs = 5, batch_size = 128)
+plot(history)</code></pre>
+<p><img src="/post/2018-10-29-artificial-neural-network_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="measure-performance" class="section level4">
+<h4>measure performance</h4>
+<pre class="r"><code>metrics &lt;- network %&gt;% evaluate(test_images, test_labels)
+metrics</code></pre>
+<pre><code>## $loss
+## [1] 0.06321383
+## 
+## $acc
+## [1] 0.9812</code></pre>
+</div>
+<div id="make-predictions" class="section level4">
+<h4>make predictions</h4>
+<pre class="r"><code>list(
+    actual = mnist$test$y[1:10],
+    preds = network %&gt;% predict_classes(test_images[1:10, ])
+)</code></pre>
+<pre><code>## $actual
+##  [1] 7 2 1 0 4 1 4 9 5 9
+## 
+## $preds
+##  [1] 7 2 1 0 4 1 4 9 5 9</code></pre>
+</div>
+
+    </div>
+  </article>
+
+  
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+

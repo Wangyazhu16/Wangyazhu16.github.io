@@ -6,10 +6,19 @@
     <description>Recent content in Posts on My First Website</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 23 Oct 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 29 Oct 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Artificial Neural Network</title>
+      <link>/2018/10/29/ann/</link>
+      <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/29/ann/</guid>
+      <description>library(keras) # classic mnist dataset mnist &amp;lt;- dataset_mnist() # training set train_images &amp;lt;- mnist$train$x train_labels &amp;lt;- mnist$train$y # test set test_images &amp;lt;- mnist$test$x test_labels &amp;lt;- mnist$test$y rescale so that values are in the [0, 1] interval train_images &amp;lt;- array_reshape(train_images, c(60000, 28 * 28)) train_images &amp;lt;- train_images / 255 test_images &amp;lt;- array_reshape(test_images, c(10000, 28 * 28)) test_images &amp;lt;- test_images / 255  network architecture network &amp;lt;- keras_model_sequential() %&amp;gt;% layer_dense(units = 512, activation = &amp;quot;relu&amp;quot;, input_shape = c(28 * 28)) %&amp;gt;% layer_dense(units = 10, activation = &amp;quot;softmax&amp;quot;)  complete our network network %&amp;gt;% compile( # how the network update itself # https://keras.</description>
+    </item>
     
     <item>
       <title>My First Post</title>
