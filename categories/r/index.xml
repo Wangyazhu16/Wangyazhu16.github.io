@@ -6,10 +6,24 @@
     <description>Recent content in R on My First Website</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 29 Oct 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 31 Oct 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linear Regression</title>
+      <link>/2018/10/31/liner-regression/</link>
+      <pubDate>Wed, 31 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/31/liner-regression/</guid>
+      <description>线性回归基本假设,影响及检验 1.数据满足线性关系 可通过查看残差图(residual plot)查看残差是否存在明显规律 若存在非线性关系,可对预测变量进行非线性转化\(logX\),\(X^{2}\),\(\sqrt{X}\)等
+ 2.误差项不相关 如果误差项之间有相关性(经常出现在时间序列),估计标准误往往低估了真实标准误. 因此,置信区间和预测区间比真实区间窄,95%置信区间包含真实参数的实际概率远低于95%. 可通过Durbin-Watson(DW)检测.
+ 3.误差项方差恒定 线性回归假设误差项方差是恒定的\(VAR(\epsilon_{i}) = \sigma^{2}\). 同样通过看残差图确定方差是否恒定,如果残差图呈漏斗形,说明方差非恒定(存在异方差性). 若存在异方差性,用凹函数对响应值Y做变换:\(logY\),\(\sqrt{Y}\)等.
+ 4.自变量之间相互独立 若自变量之间存在多重共线性(Multicollinearity),会使很多系数估计都有同样的残差平方和(RSS),导致系数估计有很大的不确定性,降低了回归系数的准确性,导致\(\hat{\beta_{j}}\)的标准误变大(t统计量由\(\hat{\beta_{j}}\)除以它的标准误得到),假设检验的效力减小了. 检测共线性的简单方法是看预测变量的相关系数矩阵,但并非所有共线性问题都可以通过检查相关系数矩阵检测到. 更好的评估多重共线性的方法是计算方差膨胀因子(variance inflation factor, VIF).\[VIF(\hat{\beta_{j}}) = \frac{1}{1-R^{2}_{X_{j}|X_{-j}}}\] \(R^{2}_{X_{j}|X_{-j}}\)是\(X_{j}\)对所有预测变量回归的\(R^{2}\). 若VIF&amp;lt;3说明该变量基本不存在多重共线性问题,若VIF&amp;gt;10说明多重共线性问题比较严重. R中可用car包中vif()函数查看方差膨胀因子.
+ 5.误差项呈正态分布 如果误差项不呈正态分布,意味着置信区间会变得很不稳定,我们往往需要重点关注一些异常的点(误差较大但出现频率较高),来得到更好的模型. 通过查看Q-Q图来检测,如果图中散点呈直线表示误差项呈正态分布,否则非正态分布.
+  </description>
+    </item>
     
     <item>
       <title>Artificial Neural Network</title>

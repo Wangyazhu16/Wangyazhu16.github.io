@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>My First Website</title>
-    <link>/</link>
-    <description>Recent content on My First Website</description>
+    <title>Lm on My First Website</title>
+    <link>/tags/lm/</link>
+    <description>Recent content in Lm on My First Website</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 31 Oct 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/lm/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -23,33 +23,6 @@
  4.自变量之间相互独立 若自变量之间存在多重共线性(Multicollinearity),会使很多系数估计都有同样的残差平方和(RSS),导致系数估计有很大的不确定性,降低了回归系数的准确性,导致\(\hat{\beta_{j}}\)的标准误变大(t统计量由\(\hat{\beta_{j}}\)除以它的标准误得到),假设检验的效力减小了. 检测共线性的简单方法是看预测变量的相关系数矩阵,但并非所有共线性问题都可以通过检查相关系数矩阵检测到. 更好的评估多重共线性的方法是计算方差膨胀因子(variance inflation factor, VIF).\[VIF(\hat{\beta_{j}}) = \frac{1}{1-R^{2}_{X_{j}|X_{-j}}}\] \(R^{2}_{X_{j}|X_{-j}}\)是\(X_{j}\)对所有预测变量回归的\(R^{2}\). 若VIF&amp;lt;3说明该变量基本不存在多重共线性问题,若VIF&amp;gt;10说明多重共线性问题比较严重. R中可用car包中vif()函数查看方差膨胀因子.
  5.误差项呈正态分布 如果误差项不呈正态分布,意味着置信区间会变得很不稳定,我们往往需要重点关注一些异常的点(误差较大但出现频率较高),来得到更好的模型. 通过查看Q-Q图来检测,如果图中散点呈直线表示误差项呈正态分布,否则非正态分布.
   </description>
-    </item>
-    
-    <item>
-      <title>Artificial Neural Network</title>
-      <link>/2018/10/29/ann/</link>
-      <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/2018/10/29/ann/</guid>
-      <description>library(keras) # classic mnist dataset mnist &amp;lt;- dataset_mnist() # training set train_images &amp;lt;- mnist$train$x train_labels &amp;lt;- mnist$train$y # test set test_images &amp;lt;- mnist$test$x test_labels &amp;lt;- mnist$test$y rescale so that values are in the [0, 1] interval train_images &amp;lt;- array_reshape(train_images, c(60000, 28 * 28)) train_images &amp;lt;- train_images / 255 test_images &amp;lt;- array_reshape(test_images, c(10000, 28 * 28)) test_images &amp;lt;- test_images / 255  network architecture network &amp;lt;- keras_model_sequential() %&amp;gt;% layer_dense(units = 512, activation = &amp;quot;relu&amp;quot;, input_shape = c(28 * 28)) %&amp;gt;% layer_dense(units = 10, activation = &amp;quot;softmax&amp;quot;)  complete our network network %&amp;gt;% compile( # how the network update itself # https://keras.</description>
-    </item>
-    
-    <item>
-      <title>My First Post</title>
-      <link>/2018/10/23/my-first-post/</link>
-      <pubDate>Tue, 23 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/2018/10/23/my-first-post/</guid>
-      <description>Ridge and Lasso Packages library(ISLR) library(tidyverse) library(glmnet)  sampling Hitters &amp;lt;- na.omit(Hitters) x &amp;lt;- model.matrix(Salary ~ ., Hitters)[, -1] y &amp;lt;- Hitters$Salary set.seed(1) train &amp;lt;- sample(1:nrow(x), nrow(x) / 2) test &amp;lt;- (-train) y.test &amp;lt;- y[test]  ridge regression grid &amp;lt;- 10 ^ seq(10, -2, length = 100) ridge.mod &amp;lt;- glmnet(x, y, alpha = 0, lambda = grid) plot(ridge.mod, main = &amp;quot;The ridge&amp;quot;)  the lasso lasso.mod &amp;lt;- glmnet(x[train, ], y[train], alpha = 1, lambda = grid) plot(lasso.</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>/about/</link>
-      <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
-      
-      <guid>/about/</guid>
-      <description>This is a &amp;ldquo;hello world&amp;rdquo; example website for the blogdown package. The theme was forked from @jrutheiser/hugo-lithium-theme and modified by Yihui Xie.</description>
     </item>
     
   </channel>

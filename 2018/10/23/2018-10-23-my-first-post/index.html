@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.47.1" />
+
+
+<title>My First Post - Home</title>
+<meta property="og:title" content="My First Post - Home">
+
+
+
+  
+
+
+
+
+
+
+<link rel="icon" href="../../../../images/" type="image/x-icon"/>
+<link rel="stylesheet" href="../../../../css/main.css" media="all">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather:400|Lato:400,400italic,700">
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="../../../../" class="nav-logo">
+    <img src="../../../../images/" 
+         width="" 
+         height="" 
+         alt="">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="../../../../">Blog</a></li>
+    
+    <li><a href="../../../../tags/">Tags</a></li>
+    
+    <li><a href="../../../../dkbi/">dkbi</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">My First Post</h1>
+    
+    <p class="post-date">
+        <span>Published <time datetime="2018-10-23" itemprop="datePublished">Oct 23, 2018</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="https:://Wangyazhu16.github.io" itemprop="url" rel="author">Yazhu Wang</a>
+            </span>
+        </span>
+    </p>
+</header>
+
+        <div class="post-content clearfix" itemprop="articleBody">
+    
+
+    <div id="ridge-and-lasso" class="section level2">
+<h2>Ridge and Lasso</h2>
+<div id="packages" class="section level4">
+<h4>Packages</h4>
+<pre class="r"><code>library(ISLR)
+library(tidyverse)
+library(glmnet)</code></pre>
+</div>
+<div id="sampling" class="section level4">
+<h4>sampling</h4>
+<pre class="r"><code>Hitters &lt;- na.omit(Hitters)
+x &lt;- model.matrix(Salary ~ ., Hitters)[, -1]
+y &lt;- Hitters$Salary
+set.seed(1)
+train &lt;- sample(1:nrow(x), nrow(x) / 2)
+test &lt;- (-train)
+y.test &lt;- y[test]</code></pre>
+</div>
+<div id="ridge-regression" class="section level4">
+<h4>ridge regression</h4>
+<pre class="r"><code>grid &lt;- 10 ^ seq(10, -2, length = 100)
+ridge.mod &lt;- glmnet(x, y, alpha = 0, lambda = grid)
+plot(ridge.mod, main = &quot;The ridge&quot;)</code></pre>
+<p><img src="../../../../post/2018-10-23-my-first-post_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="the-lasso" class="section level4">
+<h4>the lasso</h4>
+<pre class="r"><code>lasso.mod &lt;- glmnet(x[train, ], y[train], alpha = 1, lambda = grid)
+plot(lasso.mod, main = &quot;The lasso&quot;)</code></pre>
+<p><img src="../../../../post/2018-10-23-my-first-post_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="cross-validation" class="section level4">
+<h4>cross-validation</h4>
+<pre class="r"><code>set.seed(1)
+cv.out &lt;- cv.glmnet(x[train, ], y[train], alpha = 1)
+plot(cv.out)</code></pre>
+<p><img src="../../../../post/2018-10-23-my-first-post_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>bestlam &lt;- cv.out$lambda.min
+lasso.pred &lt;- predict(lasso.mod, s = bestlam, newx = x[test, ])
+mean((lasso.pred - y.test) ^ 2)</code></pre>
+<pre><code>## [1] 100743.4</code></pre>
+</div>
+</div>
+
+</div>
+
+        <footer class="post-footer clearfix">
+    
+        <p class="post-tags">
+            <span>Tagged:</span>
+            
+            
+                <a href="../../../../tags/blogdown/">Blogdown</a>
+            
+        </p>
+    
+
+    <div class="share">
+        
+            <a class="icon-twitter" href="https://twitter.com/share?text=My%20First%20Post&url=%2f2018%2f10%2f23%2f2018-10-23-my-first-post%2f"
+                onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <i class="fa fa-twitter"></i>
+                <span class="hidden">Twitter</span>
+            </a>
+        
+
+        
+            <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=%2f2018%2f10%2f23%2f2018-10-23-my-first-post%2f"
+                onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <i class="fa fa-facebook"></i>
+                <span class="hidden">Facebook</span>
+            </a>
+        
+
+        
+            <a class="icon-google-plus" href="https://plus.google.com/share?url=%2f2018%2f10%2f23%2f2018-10-23-my-first-post%2f"
+              onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+              <i class="fa fa-google-plus"></i>
+                <span class="hidden">Google+</span>
+            </a>
+        
+        
+    </div>
+</footer>
+
+        
+    </article>
+</div>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="../../../../index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="../../../../images/hugo-logo.png" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+
