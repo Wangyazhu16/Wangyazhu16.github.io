@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.47.1" />
+
+
+<title>Resampling Method - My First Website</title>
+<meta property="og:title" content="Resampling Method - My First Website">
+
+
+
+  
+
+
+
+
+
+
+<link rel="icon" href="/images/" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/main.css" media="all">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather:400|Lato:400,400italic,700">
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/timg.jpeg" 
+         width="50" 
+         height="50" 
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/Wangyazhu16">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">1 min read</span>
+    
+
+    <h1 class="article-title">Resampling Method</h1>
+
+    
+    <span class="article-date">November 1, 2018</span>
+    
+
+    <div class="article-content">
+      <div class="section level2">
+<h2>重抽样方法</h2>
+<div id="validation-set-approach" class="section level4">
+<h4>1.验证集方法(validation set approach)</h4>
+<p>1.随机的把观测集分成两部分:一个训练集(training set)和一个验证集(validation set)[保留集(hold-out set)].<br />
+模型在训练集上拟合,然后用拟合的模型来预测验证集中观测的响应变量,得到的验证集错误率(通常用均方误差)作为定量响应变量的误差度量,提供了对测试错误率的一个估计.<br />
+2.缺陷:<br />
+  测试错误率因为验证集的选取不同波动很大<br />
+  只有训练集中的观测被用于拟合模型,验证集错误率会高估在整个数据集上拟合模型所得到的测试错误率.</p>
+</div>
+<div id="leave-one-out-cross-validation-loocv" class="section level4">
+<h4>2.留一交叉验证法(leave-one-out cross-validation, LOOCV)</h4>
+<p>1.将单独的一个观测作为验证集<span class="math inline">\((x_1,y_1)\)</span>,剩下的观测组成训练集拟合模型,再用<span class="math inline">\((x_1,y_1)\)</span>验证,对每个观测重复这一步骤,得到n个MSE:<span class="math display">\[CV_{(n)}=\frac{1}{n}\sum_{i=1}^{n}{MSE_i}\]</span> <span class="math inline">\(CV_{(n)}\)</span>是测试均方误差的无偏估计.<br />
+2.优点:1.偏差较小,不容易高估测试误差率.2.LOOCV方法不存在随机性   缺点:计算量大. 3.用最小二乘法拟合线性回归或多项式回归时,可简化为:<span class="math display">\[CV_{(n)}=\frac{1}{n}\sum_{i=1}^{n}{(\frac{y_i-\hat{y_i}}{1-h_i})^{2}}\]</span> <span class="math inline">\(h_i\)</span>是杠杆值:<span class="math display">\[h_i=\frac{1}{n}+\frac{(x_i-\overline{x})^{2}}{\sum_{i^{&#39;}=1}^{n}{(x_{i^{&#39;}}-\overline{x})^{2}}}\]</span> <span class="math inline">\(h_i\)</span>的取值在<span class="math inline">\(\frac{1}{n}\)</span>和1之间,若远远超过<span class="math inline">\(\frac{p+1}{n}\)</span>,则对应点有较高的杠杆作用.</p>
+</div>
+<div id="kk-fold-cv" class="section level4">
+<h4>3.k折交叉验证法(k-fold CV)</h4>
+<p>1.将观测分为k个大小基本一致的组(或者说折fold),第一折作为验证集,然后在剩下的k-1折拟合模型,重复这个步骤k次,每一次把不同的观测组作为验证集,会得到k个测试误差的估计(MSE),k折CV估计用这些值求平均得到:<span class="math display">\[CV_{(k)}=\frac{1}{k}\sum_{i=1}^{k}{MSE_i}\]</span> 一般令k=5或k=10.<br />
+2.优点:1.计算量小.2.对测试误差的估计通常更准确.</p>
+<p>偏差-方差权衡问题:LOOCV的每一个模型高度相关,k折CV的方法相对的相关性低,高度相关的量的均值要比相关性较小的量的均值具有更高的波动性,因此LOOCV对测试均方误差的估计虽然偏差更小但方差更大.</p>
+</div>
+<div class="section level4">
+<h4>4.分类问题</h4>
+<p>分类问题用错误率替代均方误差:<span class="math display">\[CV_{(n)}=\frac{1}{n}\sum_{i=1}^{n}{Err_i}\]</span> 其中<span class="math inline">\(Err_i=I(y_i≠\hat{y_i})\)</span>.</p>
+</div>
+<div id="bootstrap" class="section level4">
+<h4>5.自助法(bootstrap)</h4>
+<p>自助法通过反复从原始数据集中抽取观测得到数据集:抽样通过有放回的形式进行,抽样得到<span class="math inline">\(Z^{*1}\)</span>,每次抽样结束后对参数进行估计,得到估计值<span class="math inline">\(\hat{\alpha^{*1}}\)</span>,这个步骤重复B次,其中B是一个很大的值,就可以产生B个数据集和相应的估计值,用这些估计值的均值来估计<span class="math inline">\(\hat{\alpha}\)</span>.</p>
+</div>
+</div>
+
+    </div>
+  </article>
+
+  
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
+<script src="/js/math-code.js"></script>
+<script async
+src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/AM_CHTML.js">
+</script>

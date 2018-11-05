@@ -21,6 +21,15 @@
     </item>
     
     <item>
+      <title>Boot</title>
+      <link>/tags/boot/</link>
+      <pubDate>Thu, 01 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/boot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Keras</title>
       <link>/tags/keras/</link>
       <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
