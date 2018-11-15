@@ -6,10 +6,20 @@
     <description>Recent content in R on My First Website</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 01 Nov 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 14 Nov 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Customer Loss--Xgboost</title>
+      <link>/2018/11/14/action/</link>
+      <pubDate>Wed, 14 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/14/action/</guid>
+      <description>算法应用–携程客户流失预测 数据说明 数据集为携程云海数据比赛题目云海赛事,共51个特征(其中一个为label[0,1分类]),缺失较严重.
+ 数据概述 library(tidyverse) library(woeBinning) library(rsample) library(ggthemes) # set theme old &amp;lt;- theme_set(theme_fivethirtyeight() + theme(text = element_text(family = &amp;quot;Menlo&amp;quot;))) # 设置种子 set.seed(1111) dat &amp;lt;- read_tsv(&amp;quot;~/Documents/GitHub/customer_loss/data/yhxwfx_data/userlostprob_train.csv&amp;quot;, na = c(&amp;quot;NULL&amp;quot;)) dat %&amp;gt;% skimr::skim() ## Skim summary statistics ## n obs: 689945 ## n variables: 51 ## ## Variable type: Date ## variable missing complete n min max median ## arrival 0 689945 689945 2016-05-15 2016-06-20 2016-05-20 ## d 0 689945 689945 2016-05-15 2016-05-21 2016-05-18 ## n_unique ## 37 ## 7 ## ## Variable type: integer ## variable missing complete n mean ## cancelrate 11718 678227 689945 1051.</description>
+    </item>
     
     <item>
       <title>Resampling Method</title>

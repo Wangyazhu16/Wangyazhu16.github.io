@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.47.1" />
+
+
+<title>Customer Loss--Xgboost - My First Website</title>
+<meta property="og:title" content="Customer Loss--Xgboost - My First Website">
+
+
+
+  
+
+
+
+
+
+
+<link rel="icon" href="/images/" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/main.css" media="all">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather:400|Lato:400,400italic,700">
+
+<script src="./js/math-code.js"></script>
+<script async
+src="https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/timg.jpeg" 
+         width="50" 
+         height="50" 
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/Wangyazhu16">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">7 min read</span>
+    
+
+    <h1 class="article-title">Customer Loss--Xgboost</h1>
+
+    
+    <span class="article-date">November 14, 2018</span>
+    
+
+    <div class="article-content">
+      <div class="section level2">
+<h2>算法应用–携程客户流失预测</h2>
+<div class="section level3">
+<h3>数据说明</h3>
+<p>数据集为携程云海数据比赛题目<a href="https://yunhai.ctrip.com/Games/6">云海赛事</a>,共51个特征(其中一个为label[0,1分类]),缺失较严重.</p>
+</div>
+<div class="section level3">
+<h3>数据概述</h3>
+<pre class="r"><code>library(tidyverse)
+library(woeBinning)
+library(rsample)
+library(ggthemes)
+
+# set theme
+old &lt;- theme_set(theme_fivethirtyeight() + theme(text = element_text(family = &quot;Menlo&quot;)))
+
+# 设置种子
+set.seed(1111)
+
+dat &lt;- read_tsv(&quot;~/Documents/GitHub/customer_loss/data/yhxwfx_data/userlostprob_train.csv&quot;, na = c(&quot;NULL&quot;))</code></pre>
+<pre class="r"><code>dat %&gt;% skimr::skim()</code></pre>
+<pre><code>## Skim summary statistics
+##  n obs: 689945 
+##  n variables: 51 
+## 
+## Variable type: Date 
+##  variable missing complete      n        min        max     median
+##   arrival       0   689945 689945 2016-05-15 2016-06-20 2016-05-20
+##         d       0   689945 689945 2016-05-15 2016-05-21 2016-05-18
+##  n_unique
+##        37
+##         7
+## 
+## Variable type: integer 
+##                          variable missing complete      n      mean
+##                        cancelrate   11718   678227 689945   1051.6 
+##                       commentnums   67916   622029 689945   1272.09
+##                   commentnums_pre   91577   598368 689945   1415.16
+##                                 h       0   689945 689945     14.46
+##            historyvisit_7ordernum  607030    82915 689945      1.86
+##        historyvisit_totalordernum  303420   386525 689945     11.71
+##  historyvisit_visit_detailpagenum  382711   307234 689945     37.15
+##                     iforderpv_24h       0   689945 689945      0.19
+##                             label       0   689945 689945      0.27
+##                     landhalfhours   28633   661312 689945      6.09
+##                   lasthtlordergap  242114   447831 689945  1e+05   
+##                         lastpvgap   97127   592818 689945  12049.41
+##                          novoters   17027   672918 689945   1706.25
+##                      novoters_pre   40989   648956 689945   1890.7 
+##                 ordercanncelednum  242114   447831 689945    154.18
+##                  ordernum_oneyear  242114   447831 689945     11.64
+##                          sampleid       0   689945 689945 628540.21
+##                               sid       0   689945 689945    153.7 
+##                  visitnum_oneyear   97035   592910 689945  18551.85
+##         sd    p0    p25   p50    p75    p100     hist
+##    1509.07     1    137   503   1373   18930 ▇▁▁▁▁▁▁▁
+##    2101.87     0    115   514   1670   34189 ▇▁▁▁▁▁▁▁
+##    2329.42     0    137   592   1862   34189 ▇▁▁▁▁▁▁▁
+##       6.3      0     11    15     20      23 ▃▁▂▅▆▇▆▇
+##       2.1      1      1     1      2     106 ▇▁▁▁▁▁▁▁
+##      17.25     1      2     6     14     711 ▇▁▁▁▁▁▁▁
+##      73.4      1      6    18     44    6199 ▇▁▁▁▁▁▁▁
+##       0.4      0      0     0      0       1 ▇▁▁▁▁▁▁▂
+##       0.45     0      0     0      1       1 ▇▁▁▁▁▁▁▃
+##      12.41     0      0     0      4      49 ▇▁▁▁▁▁▁▁
+##  122784.31     0  14999 46890 138953  527026 ▇▂▁▁▁▁▁▁
+##   25601.37     0    551  2848  10726  194386 ▇▁▁▁▁▁▁▁
+##    2811.69     1    157   692   2196   45455 ▇▁▁▁▁▁▁▁
+##    3116.12     1    187   783   2453   45436 ▇▁▁▁▁▁▁▁
+##     398.46     0      0     2    153   13475 ▇▁▁▁▁▁▁▁
+##      17.14     1      2     6     14     711 ▇▁▁▁▁▁▁▁
+##  414681.5  24636 312320 6e+05 887460 2238426 ▇▇▇▇▁▁▁▁
+##     277.81     0     17    62    180    9956 ▇▁▁▁▁▁▁▁
+##  228860.31     1    471  1315   3141 9651192 ▇▁▁▁▁▁▁▁
+## 
+## Variable type: numeric 
+##                  variable missing complete      n    mean       sd
+##                  avgprice  232684   457261 689945  422.46  290.85 
+##          businessrate_pre  206049   483896 689945    0.37    0.23 
+##         businessrate_pre2   86985   602960 689945    0.37    0.22 
+##            cancelrate_pre   36930   653015 689945    0.34    0.18 
+##                cityorders   38682   651263 689945    2.25    3.54 
+##                   cityuvs    7671   682274 689945   10.65   15.7  
+##          commentnums_pre2   41488   648457 689945 1313.39 1719.51 
+##        consuming_capacity  226108   463837 689945   39.15   23.24 
+##                        cr  232049   457896 689945    1.14    0.2  
+##                    cr_pre   29397   660548 689945    1.06    0.045
+##             ctrip_profits  244758   445187 689945    4.21    9.31 
+##     customer_value_profit  250822   439123 689945    3.04    6.63 
+##         customereval_pre2   28633   661312 689945    3.05    1.23 
+##        decisionhabit_user  304495   385450 689945    5.32   38.52 
+##              delta_price1  252799   437146 689945   79.07  512.94 
+##              delta_price2  252195   437750 689945   77.28  391.41 
+##        deltaprice_pre2_t1  146765   543180 689945    3.28   48.81 
+##             firstorder_bu  312952   376993 689945   11.7     2.75 
+##  historyvisit_avghotelnum  302069   387876 689945    6.51   41.05 
+##                   hotelcr     797   689148 689945    1.06    0.045
+##                   hoteluv     797   689148 689945   95.09  169.98 
+##               lowestprice    2014   687931 689945  318.81  575.78 
+##           lowestprice_pre   30256   659689 689945  315.95  463.72 
+##          lowestprice_pre2   29281   660664 689945  318.54  351.91 
+##             novoters_pre2   32329   657616 689945 1787.2  2316.71 
+##      ordercanceledprecent  242114   447831 689945    0.34    0.35 
+##           price_sensitive  226108   463837 689945   24.65   26.69 
+##                starprefer  225053   464892 689945   67.53   19.18 
+##                    uv_pre   29397   660548 689945  107.85  186.73 
+##                   uv_pre2   28756   661189 689945  103.35  157.12 
+##          p0    p25     p50     p75     p100     hist
+##       1     232     350     524     6383    ▇▁▁▁▁▁▁▁
+##       0       0.15    0.39    0.57     0.99 ▇▅▅▆▆▅▁▁
+##       0       0.17    0.4     0.55     0.99 ▇▅▆▇▇▅▁▁
+##       0       0.23    0.32    0.42     1    ▂▆▇▆▂▁▁▁
+##       0.007   0.13    0.63    2.75    14.51 ▇▂▁▁▁▁▁▁
+##       0.007   0.83    3.53   13.33    67.14 ▇▂▁▁▁▁▁▁
+##       0     270     768    1780    34189    ▇▁▁▁▁▁▁▁
+##       0      22      33      51      100    ▂▇▇▅▃▂▁▂
+##       1       1       1.05    1.21    11    ▇▁▁▁▁▁▁▁
+##       1       1.03    1.06    1.09     2.95 ▇▁▁▁▁▁▁▁
+##     -44.31    0.34    1.35    4.32   600.82 ▇▁▁▁▁▁▁▁
+##     -24.07    0.27    0.99    3.14   598.06 ▇▁▁▁▁▁▁▁
+##       0       2       3       4        6    ▁▃▆▇▆▇▃▁
+##       0       2       3       5     3167    ▇▁▁▁▁▁▁▁
+##  -99879     -31      81     226     5398    ▁▁▁▁▁▁▁▇
+##  -43344     -29      69     198     5114    ▁▁▁▁▁▁▁▇
+##   -2296      -3       2      10     3324    ▁▁▁▇▁▁▁▁
+##       1      12      13      13       21    ▁▁▁▁▇▁▁▁
+##       0       2       4       7     3167    ▇▁▁▁▁▁▁▁
+##       1       1.03    1.05    1.09     3.18 ▇▁▁▁▁▁▁▁
+##       0.007  10.43   36.18  107.75  1722.61 ▇▁▁▁▁▁▁▁
+##      -3     116     200     380    1e+05    ▇▁▁▁▁▁▁▁
+##       1     118     208     385    1e+05    ▇▁▁▁▁▁▁▁
+##       1     145     233     388    43700    ▇▁▁▁▁▁▁▁
+##       1     391    1054    2413    45436    ▇▁▁▁▁▁▁▁
+##       0       0       0.25    0.57     1    ▇▂▂▂▁▁▁▃
+##       0       5      16      33      100    ▇▅▂▂▁▁▁▁
+##       0      53.3    69.4    80.3    100    ▁▁▁▆▆▆▇▅
+##       0.007  12.53   42.5   124.71  1722.61 ▇▁▁▁▁▁▁▁
+##       0.007  17.56   51.29  126.2   1722.61 ▇▁▁▁▁▁▁▁</code></pre>
+<p>可以看到,数据缺失情况比较严重.</p>
+<p>观察输出猜想部分缺失数据有一定的关系(lasthtlordergap,ordercanncelednum等缺失数量相同).验证猜想:</p>
+<pre class="r"><code>c1 &lt;- (dat %&gt;% filter(is.na(lasthtlordergap)) %&gt;% pull(sampleid))
+c2 &lt;- (dat %&gt;% filter(is.na(ordercanncelednum)) %&gt;% pull(sampleid)) 
+c3 &lt;- (dat %&gt;% filter(is.na(ordernum_oneyear)) %&gt;% pull(sampleid)) 
+c4 &lt;- (dat %&gt;% filter(is.na(ordercanceledprecent)) %&gt;% pull(sampleid)) </code></pre>
+<pre class="r"><code>(!(c1 == c2)) %&gt;% sum()</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>(!(c1 == c3)) %&gt;% sum()</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>(!(c1 == c4)) %&gt;% sum()</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>发现这四个变量确实是同时缺失.</p>
+</div>
+<div class="section level3">
+<h3>查看日期及因变量分布</h3>
+<pre class="r"><code>dat %&gt;% 
+    ggplot(aes(arrival)) + 
+    geom_bar(fill = &quot;pink2&quot;)</code></pre>
+<p><img src="/post/2018-11-14-customer-loss-xgboost_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>dat %&gt;% 
+    ggplot(aes(d)) + 
+    geom_bar(fill = &quot;blue&quot;)</code></pre>
+<p><img src="/post/2018-11-14-customer-loss-xgboost_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre class="r"><code>dat %&gt;% 
+    ggplot(aes(as.factor(label))) + 
+    geom_bar()</code></pre>
+<p><img src="/post/2018-11-14-customer-loss-xgboost_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
+<p>酒店行业一般关注周末和节日,但从图中可以看出入住日期在<code>5月20日</code>和<code>5月21日</code>明显高于其他日期,周末无明显增加.<br />
+预定日期则分布较平均.</p>
+</div>
+<div class="section level3">
+<h3>特征工程</h3>
+<ul>
+<li>缺失值处理<br />
+分析字段含义及缺失情况确定缺失值处理方式:<br />
+1.缺失率大于80% — 删除<br />
+2.中位数填充<br />
+3.0值填充</li>
+<li>异常值处理<br />
+分析字段含义及极端情况确定极端值处理方式: 盖帽法等<br />
+</li>
+<li>删除相关性大于0.8字段</li>
+<li>衍生变量: arrive - d(入住日期-预定日期)</li>
+</ul>
+</div>
+<div class="section level3">
+<h3>建模</h3>
+<pre class="r"><code># 载入包 --------------------------------------------------------------------
+library(xgboost)
+library(pROC)
+# 载入数据 --------------------------------------------------------------------
+
+load(file = &quot;~/Documents/GitHub/customer_loss/data/df_train.RDs&quot;)
+load(file = &quot;~/Documents/GitHub/customer_loss/data/df_test.RDs&quot;)
+
+# 设置种子 --------------------------------------------------------------------
+
+set.seed(6666)</code></pre>
+<p>建模(暂未调整参数),导入已经保存模型</p>
+<pre class="r"><code>load(file = &quot;~/Documents/GitHub/customer_loss/data/xgb_md.model&quot;)</code></pre>
+<p>计算不同阈值准确率,召回率,精确度函数</p>
+<pre class="r"><code># 计算不同阈值准确率,召回率,精确度函数-----------------------------
+
+get_eval &lt;- function(thr, dat, mdl) {
+    
+    pred &lt;- predict(mdl, newdata = as.matrix(dat[, -1]))
+    
+    prediction &lt;- as.numeric(pred &gt; thr)
+    
+    accuracy &lt;- (table(prediction, dat$label)[1, 1] + 
+        table(prediction, dat$label)[2, 2]) / (dat$label %&gt;% length())
+    
+    recall &lt;- table(prediction, dat$label)[1, 1] / table(dat$label)[1]
+    
+    precision &lt;- table(prediction, dat$label)[1, 1] / table(prediction)[1]
+    
+    list(thr = thr, recall = recall, precision = precision, accuracy = accuracy)
+}</code></pre>
+<p>预测结果</p>
+<pre class="r"><code>pred_train &lt;- predict(xgb_md2, newdata = as.matrix(df_train[, -1]))
+
+prediction_train &lt;- as.numeric(pred_train &gt; 0.5)
+
+table(prediction_train, df_train$label)</code></pre>
+<pre><code>##                 
+## prediction_train      0      1
+##                0 355571  99067
+##                1  19808  43013</code></pre>
+<pre class="r"><code>pred_test &lt;- predict(xgb_md2, newdata = as.matrix(df_test[, -1]))
+
+prediction_test &lt;- as.numeric(pred_test &gt; 0.5)
+
+table(prediction_test, df_test$label)</code></pre>
+<pre><code>##                
+## prediction_test      0      1
+##               0 118350  33290
+##               1   6859  13987</code></pre>
+<pre class="r"><code># 阈值范围 --------------------------------------------------------------------
+
+thr_ls &lt;- seq(0.05, 0.6, by = 0.05)
+
+result_train &lt;- thr_ls %&gt;% map(get_eval, dat = df_train, mdl = xgb_md2) %&gt;% bind_rows()
+
+result_test &lt;- thr_ls %&gt;% map(get_eval, dat = df_test, mdl = xgb_md2) %&gt;% bind_rows()</code></pre>
+<p>不同阈值下recall,precision</p>
+<pre class="r"><code>result_train</code></pre>
+<pre><code>## # A tibble: 12 x 4
+##      thr recall precision accuracy
+##    &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1  0.05 0.0692     0.992    0.324
+##  2  0.1  0.210      0.970    0.422
+##  3  0.15 0.366      0.942    0.524
+##  4  0.2  0.510      0.913    0.609
+##  5  0.25 0.632      0.887    0.674
+##  6  0.3  0.731      0.862    0.720
+##  7  0.35 0.811      0.838    0.749
+##  8  0.4  0.874      0.817    0.766
+##  9  0.45 0.917      0.798    0.771
+## 10  0.5  0.947      0.782    0.770
+## 11  0.55 0.968      0.768    0.764
+## 12  0.6  0.982      0.756    0.757</code></pre>
+<pre class="r"><code>result_test</code></pre>
+<pre><code>## # A tibble: 12 x 4
+##      thr recall precision accuracy
+##    &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1  0.05 0.0660     0.989    0.321
+##  2  0.1  0.206      0.962    0.418
+##  3  0.15 0.362      0.934    0.518
+##  4  0.2  0.506      0.908    0.604
+##  5  0.25 0.630      0.882    0.670
+##  6  0.3  0.729      0.858    0.716
+##  7  0.35 0.809      0.835    0.745
+##  8  0.4  0.871      0.813    0.762
+##  9  0.45 0.915      0.796    0.768
+## 10  0.5  0.945      0.780    0.767
+## 11  0.55 0.966      0.767    0.762
+## 12  0.6  0.980      0.755    0.754</code></pre>
+<p>ROC &amp; AUC</p>
+<pre class="r"><code># ROC &amp; AUC----------------------------------------------------------
+plot(roc(df_train$label, pred_train), col=&quot;blue&quot;, ylab = &quot;train_sensitivity&quot;)
+plot.roc(roc(df_train$label, pred_train), 
+         add = T, 
+         col = &quot;red&quot;, 
+         ylab = &quot;train_sensitivity&quot;)</code></pre>
+<p><img src="/post/2018-11-14-customer-loss-xgboost_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>auc(roc(df_train$label, pred_train))</code></pre>
+<pre><code>## Area under the curve: 0.7893</code></pre>
+<pre class="r"><code>plot(roc(df_test$label, pred_test), col=&quot;blue&quot;, ylab = &quot;test_sensitivity&quot;)  
+plot.roc(roc(df_test$label, pred_test), 
+         add = T,
+         col = &quot;red&quot;,
+         ylab = &quot;test_sensitivity&quot;)</code></pre>
+<p><img src="/post/2018-11-14-customer-loss-xgboost_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<pre class="r"><code>auc(roc(df_test$label, pred_test))</code></pre>
+<pre><code>## Area under the curve: 0.7801</code></pre>
+</div>
+</div>
+
+    </div>
+  </article>
+
+  
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/9.13.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
+<script src="./js/math-code.js"></script>
+<script async
+src="https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/gml.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
