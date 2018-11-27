@@ -38,6 +38,10 @@
   </url>
   
   <url>
+    <loc>/1/01/01/</loc>
+  </url>
+  
+  <url>
     <loc>/tags/blogdown/</loc>
     <lastmod>2018-10-23T00:00:00+00:00</lastmod>
     <priority>0</priority>

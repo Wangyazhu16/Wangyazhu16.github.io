@@ -76,7 +76,8 @@ library(pROC)
 set.seed(1111)
 
 # 载入数据
-load(&quot;~/Documents/GitHub/customer_loss/data/df_train.RDs&quot;)</code></pre>
+load(&quot;~/Documents/GitHub/customer_loss/data/df_train.RDs&quot;)
+load(&quot;~/Documents/GitHub/customer_loss/data/df_test.RDs&quot;)</code></pre>
 <div class="section level3">
 <h3>建模过程</h3>
 </div>
@@ -85,17 +86,28 @@ load(&quot;~/Documents/GitHub/customer_loss/data/df_train.RDs&quot;)</code></pre
 <pre class="r"><code># 载入模型
 load(&quot;~/Documents/GitHub/customer_loss/data/lr_aic_back.model&quot;)
 
-# 预测概率
+# 训练集预测概率
 pred_train_LR_AIC &lt;- predict(lr_aic_back, df_train, type = &quot;response&quot;)
 
-# AUC值
+# 测试集预测概率
+pred_test_LR_AIC &lt;- predict(lr_aic_back, df_test, type = &quot;response&quot;)
+
+# 训练集AUC值
 auc(roc(df_train$label, pred_train_LR_AIC))</code></pre>
 <pre><code>## Area under the curve: 0.7007</code></pre>
-<pre class="r"><code># 绘制ROC曲线
+<pre class="r"><code># 绘制ROC曲线(训练集)
 plot(roc(df_train$label, pred_train_LR_AIC), 
      col=&quot;blue&quot;, 
-     ylab = &quot;train_sensitivity&quot;) </code></pre>
-<p><img src="/post/2018-11-26-logistic-regression_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+     ylab = &quot;train_sensitivity&quot;)</code></pre>
+<p><img src="/post/2018-11-27-lr_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code># 测试集AUC值
+auc(roc(df_test$label, pred_test_LR_AIC))</code></pre>
+<pre><code>## Area under the curve: 0.7016</code></pre>
+<pre class="r"><code># 绘制ROC曲线(测试集)
+plot(roc(df_test$label, pred_test_LR_AIC), 
+     col=&quot;blue&quot;, 
+     ylab = &quot;test_sensitivity&quot;) </code></pre>
+<p><img src="/post/2018-11-27-lr_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
 </div>
 <div class="section level3">
 <h3>为对比变量重要性,将数据标准化后重新建模</h3>
