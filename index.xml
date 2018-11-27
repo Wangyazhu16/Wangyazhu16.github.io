@@ -6,10 +6,20 @@
     <description>Recent content on My First Website</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 26 Nov 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 27 Nov 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Elastic Net &amp; Lasso</title>
+      <link>/2018/11/27/action/</link>
+      <pubDate>Tue, 27 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/27/action/</guid>
+      <description>算法应用–携程客户流失预测 此次弹性网络和Lasso应用的数据依然为携程客户流失数据
+载入数据及训练好的模型 library(glmnet) library(tidyverse) library(pROC) library(broom) load(&amp;quot;~/Documents/GitHub/customer_loss/data/df_train.RDs&amp;quot;) load(&amp;quot;~/Documents/GitHub/customer_loss/data/df_test.RDs&amp;quot;) load(&amp;quot;~/Documents/GitHub/customer_loss/data/enet_md_cv.model&amp;quot;) load(&amp;quot;~/Documents/GitHub/customer_loss/data/enet_md.model&amp;quot;) load(&amp;quot;~/Documents/GitHub/customer_loss/data/grid_lg.RDs&amp;quot;) load(&amp;quot;~/Documents/GitHub/customer_loss/data/lasso_md_cv.model&amp;quot;) load(&amp;quot;~/Documents/GitHub/customer_loss/data/lasso_md.model&amp;quot;) load(&amp;quot;~/Documents/GitHub/customer_loss/data/lasso_md_scale.model&amp;quot;)  训练模型过程 # # 用于在alpha固定的情况下，对lambda进行交叉验证，并输出相应的结果 # get_enet &amp;lt;- function(input, response, alpha,method = &amp;quot;linear&amp;quot;) { # if(method == &amp;quot;logistic&amp;quot;){ # enet &amp;lt;- cv.glmnet(x = input, y = response,family = &amp;quot;binomial&amp;quot;, alpha = alpha,type.measure = &amp;quot;auc&amp;quot;) # }else{ # enet &amp;lt;- cv.glmnet(x = input, y = response, alpha = alpha) # } # list( # alpha = alpha, # # 平均交叉验证误差最小的lambda # lambda_min = enet$lambda.</description>
+    </item>
     
     <item>
       <title>Logistic Regression &amp; Stepwise Selection</title>

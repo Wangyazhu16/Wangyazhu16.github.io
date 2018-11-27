@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.47.1" />
+
+
+<title>Elastic Net &amp; Lasso - My First Website</title>
+<meta property="og:title" content="Elastic Net &amp; Lasso - My First Website">
+
+
+
+  
+
+
+
+
+
+
+<link rel="icon" href="/images/" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/main.css" media="all">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather:400|Lato:400,400italic,700">
+
+<script src="./js/math-code.js"></script>
+<script async
+src="https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/timg.jpeg" 
+         width="50" 
+         height="50" 
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/Wangyazhu16">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">3 min read</span>
+    
+
+    <h1 class="article-title">Elastic Net &amp; Lasso</h1>
+
+    
+    <span class="article-date">November 27, 2018</span>
+    
+
+    <div class="article-content">
+      <div class="section level2">
+<h2>算法应用–携程客户流失预测</h2>
+<p>此次弹性网络和Lasso应用的数据依然为携程客户流失数据</p>
+<div class="section level3">
+<h3>载入数据及训练好的模型</h3>
+<pre class="r"><code>library(glmnet)
+library(tidyverse)
+library(pROC)
+library(broom)
+
+load(&quot;~/Documents/GitHub/customer_loss/data/df_train.RDs&quot;)
+load(&quot;~/Documents/GitHub/customer_loss/data/df_test.RDs&quot;)
+load(&quot;~/Documents/GitHub/customer_loss/data/enet_md_cv.model&quot;)
+load(&quot;~/Documents/GitHub/customer_loss/data/enet_md.model&quot;)
+load(&quot;~/Documents/GitHub/customer_loss/data/grid_lg.RDs&quot;)
+load(&quot;~/Documents/GitHub/customer_loss/data/lasso_md_cv.model&quot;)
+load(&quot;~/Documents/GitHub/customer_loss/data/lasso_md.model&quot;)
+load(&quot;~/Documents/GitHub/customer_loss/data/lasso_md_scale.model&quot;)</code></pre>
+</div>
+<div class="section level3">
+<h3>训练模型过程</h3>
+<pre class="r"><code># # 用于在alpha固定的情况下，对lambda进行交叉验证，并输出相应的结果
+# get_enet &lt;- function(input, response, alpha,method = &quot;linear&quot;) {
+#     if(method == &quot;logistic&quot;){
+#         enet &lt;- cv.glmnet(x = input, y = response,family = &quot;binomial&quot;, alpha = alpha,type.measure = &quot;auc&quot;)
+#     }else{
+#         enet &lt;- cv.glmnet(x = input, y = response, alpha = alpha)
+#     }
+#     list(
+#         alpha = alpha,
+#         # 平均交叉验证误差最小的lambda
+#         lambda_min = enet$lambda.min,
+#         # lambda = lambda.min时非0系数的个数
+#         coef_min = with(enet, nzero[lambda == lambda.min]),
+#         # lambda = lambda.min时均方误差
+#         mse_min = with(enet, cvm[lambda == lambda.min]),
+#         # 交叉验证误差的标准差最小的lambda
+#         lambda_1se = enet$lambda.1se,
+#         coef = with(enet, nzero[lambda == lambda.1se]),
+#         mse_1se = with(enet, cvm[lambda == lambda.1se])
+#     )
+# }
+# 
+# alphas = seq(0, 1, .1)
+# 
+# (grid_lg &lt;- map_df(
+#     alphas,
+#     ~ get_enet(
+#         df_train[, -1] %&gt;% as.matrix(),
+#         df_train$label,
+#         alpha = .x,
+#         method = &quot;logistic&quot;
+#         )
+#     ) %&gt;% 
+#     arrange(mse_1se))
+
+# # 输出最优alpha和lambda
+# best_alpha_lg &lt;- grid_lg$alpha[1]
+# best_lambda_lg &lt;- grid_lg$lambda_min[1]
+# 
+# # 训练模型
+# enet_md &lt;- glmnet(
+#     x = df_train[, -1] %&gt;% as.matrix(),
+#     y = df_train$label,
+#     family = &quot;binomial&quot;,
+#     alpha = best_alpha_lg,
+#     lambda = best_lambda_lg
+# )
+
+# lasso_md_cv &lt;- cv.glmnet(
+#     x = df_train[, -1] %&gt;% as.matrix(),
+#     y = df_train$label,
+#     alpha = 1,
+#     family = &quot;binomial&quot;
+#     )
+# 
+# lasso_md &lt;- glmnet(
+#     x = df_train[, -1] %&gt;% as.matrix(),
+#     y = df_train$label,
+#     alpha = 1,
+#     family = &quot;binomial&quot;,
+#     lambda = best_lambda_lasso
+#     )
+# 
+# lasso_md_scale &lt;- glmnet(
+#     x = df_train_scale_x %&gt;% as.matrix(),
+#     y = df_train_scale_y,
+#     alpha = 1,
+#     family = &quot;binomial&quot;,
+#     lambda = best_lambda_lasso
+# )</code></pre>
+</div>
+<div id="elastic-net-" class="section level3">
+<h3>elastic net 模型</h3>
+<pre class="r"><code># 最优模型变量个数
+with(enet_md_cv, nzero[lambda == lambda.min])</code></pre>
+<pre><code>## s98 
+##  34</code></pre>
+<pre class="r"><code># 最优模型预测值
+pred_train_enet &lt;- predict(
+    enet_md, df_train[, -1] %&gt;% as.matrix(), 
+    type = &quot;response&quot;
+    ) %&gt;% 
+    as.vector()
+
+pred_test_enet &lt;- predict(
+    enet_md, df_test[, -1] %&gt;% as.matrix(), 
+    type = &quot;response&quot;
+    ) %&gt;% 
+    as.vector()
+
+# enet ROC &amp; AUC(训练集)
+auc(roc(df_train$label, pred_train_enet))</code></pre>
+<pre><code>## Area under the curve: 0.7005</code></pre>
+<pre class="r"><code>plot(roc(df_train$label, pred_train_enet), col=&quot;blue&quot;, ylab = &quot;enet_train_sensitivity&quot;)  </code></pre>
+<p><img src="/post/2018-11-27-elastic-network_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code># enet ROC &amp; AUC(测试集)
+auc(roc(df_test$label, pred_test_enet))</code></pre>
+<pre><code>## Area under the curve: 0.7014</code></pre>
+<pre class="r"><code>plot(roc(df_test$label, pred_test_enet), col=&quot;blue&quot;, ylab = &quot;enet_test_sensitivity&quot;)  </code></pre>
+<p><img src="/post/2018-11-27-elastic-network_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+</div>
+<div id="lasso-" class="section level3">
+<h3>Lasso 模型</h3>
+<pre class="r"><code># 最优模型变量个数
+with(lasso_md_cv, nzero[lambda == lambda.min])</code></pre>
+<pre><code>## s54 
+##  29</code></pre>
+<pre class="r"><code># 最优模型预测值
+pred_train_lasso &lt;- predict(
+    lasso_md, df_train[, -1] %&gt;% as.matrix(), 
+    type = &quot;response&quot;
+) %&gt;% 
+    as.vector()
+
+pred_test_lasso &lt;- predict(
+    lasso_md, df_test[, -1] %&gt;% as.matrix(), 
+    type = &quot;response&quot;
+) %&gt;% 
+    as.vector()
+
+# lasso ROC &amp; AUC(训练集) 
+auc(roc(df_train$label, pred_train_lasso))</code></pre>
+<pre><code>## Area under the curve: 0.7007</code></pre>
+<pre class="r"><code>plot(roc(df_train$label, pred_train_lasso), col=&quot;blue&quot;, ylab = &quot;lasso_train_sensitivity&quot;)  </code></pre>
+<p><img src="/post/2018-11-27-elastic-network_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code># lasso ROC &amp; AUC(测试集) 
+auc(roc(df_test$label, pred_test_lasso))</code></pre>
+<pre><code>## Area under the curve: 0.7016</code></pre>
+<pre class="r"><code>plot(roc(df_test$label, pred_test_lasso), col=&quot;blue&quot;, ylab = &quot;lasso_train_sensitivity&quot;)  </code></pre>
+<p><img src="/post/2018-11-27-elastic-network_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+</div>
+<div id="lasso" class="section level3">
+<h3>数据标准化后lasso</h3>
+<pre class="r"><code># 变量重要性
+coef(lasso_md_scale) %&gt;% 
+    tidy() %&gt;% 
+    filter(row != &quot;(Intercept)&quot;) %&gt;% 
+    top_n(20, wt = abs(value)) %&gt;% 
+    mutate(wt = abs(value)) %&gt;% 
+    arrange(-wt)</code></pre>
+<pre><code>## Warning: &#39;tidy.dgCMatrix&#39; is deprecated.
+## See help(&quot;Deprecated&quot;)</code></pre>
+<pre><code>## Warning: &#39;tidy.dgTMatrix&#39; is deprecated.
+## See help(&quot;Deprecated&quot;)</code></pre>
+<pre><code>##                  row column       value         wt
+## 1          intervals     s0 -0.30010403 0.30010403
+## 2   ordernum_oneyear     s0  0.24528873 0.24528873
+## 3      iforderpv_24h     s0  0.24143794 0.24143794
+## 4                 cr     s0  0.23502623 0.23502623
+## 5   visitnum_oneyear     s0 -0.23030131 0.23030131
+## 6                  h     s0 -0.18201748 0.18201748
+## 7         cityorders     s0  0.08861190 0.08861190
+## 8            hotelcr     s0  0.08389900 0.08389900
+## 9        lowestprice     s0 -0.08179874 0.08179874
+## 10        cancelrate     s0  0.07669428 0.07669428
+## 11      delta_price2     s0  0.07192665 0.07192665
+## 12           hoteluv     s0 -0.06455523 0.06455523
+## 13            cr_pre     s0  0.06367519 0.06367519
+## 14 businessrate_pre2     s0  0.06320619 0.06320619
+## 15               sid     s0 -0.05927907 0.05927907
+## 16  lowestprice_pre2     s0 -0.05612325 0.05612325
+## 17         lastpvgap     s0  0.05231896 0.05231896
+## 18     ctrip_profits     s0  0.04590612 0.04590612
+## 19          avgprice     s0 -0.04420086 0.04420086
+## 20      novoters_pre     s0  0.03913176 0.03913176</code></pre>
+</div>
+</div>
+
+    </div>
+  </article>
+
+  
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/9.13.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
+<script src="./js/math-code.js"></script>
+<script async
+src="https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/gml.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
