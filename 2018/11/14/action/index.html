@@ -55,7 +55,7 @@ src="https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 
   <article class="article">
     
-    <span class="article-duration">7 min read</span>
+    <span class="article-duration">8 min read</span>
     
 
     <h1 class="article-title">Customer Loss--Xgboost</h1>
@@ -359,6 +359,45 @@ plot.roc(roc(df_test$label, pred_test),
 <p><img src="/post/2018-11-14-customer-loss-xgboost_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
 <pre class="r"><code>auc(roc(df_test$label, pred_test))</code></pre>
 <pre><code>## Area under the curve: 0.7801</code></pre>
+<p>变量重要性</p>
+<pre class="r"><code># 对模型影响最大的变量排序
+xgb.importance(colnames(df_train[,-1]), model = xgb_md2)</code></pre>
+<pre><code>##                              Feature        Gain       Cover   Frequency
+##  1:                               cr 0.153651789 0.047566831 0.041361078
+##  2:                        intervals 0.118783815 0.060143559 0.040508272
+##  3:                                h 0.094718212 0.085934130 0.057052703
+##  4:                 visitnum_oneyear 0.064642718 0.071597258 0.077093638
+##  5:                    iforderpv_24h 0.058117165 0.029205510 0.019699812
+##  6:                 ordernum_oneyear 0.055669929 0.028744532 0.032577179
+##  7:                  lasthtlordergap 0.041025620 0.061993323 0.066263005
+##  8:                              sid 0.036329083 0.047257526 0.057820229
+##  9:                     delta_price2 0.033102337 0.017224131 0.012621525
+## 10:                       cityorders 0.032261176 0.030432655 0.038717380
+## 11:                        lastpvgap 0.030984258 0.058553044 0.064557394
+## 12:                          hotelcr 0.027527373 0.028615633 0.007931093
+## 13:                businessrate_pre2 0.027464538 0.023832944 0.027375064
+## 14:                    ctrip_profits 0.026438912 0.055299986 0.057734948
+## 15:                    landhalfhours 0.020100372 0.026046214 0.020040935
+## 16:                       starprefer 0.017563156 0.021307767 0.039484905
+## 17:                     novoters_pre 0.017305605 0.024518610 0.017482517
+## 18:         historyvisit_avghotelnum 0.016890755 0.036504439 0.034453352
+## 19: historyvisit_visit_detailpagenum 0.016439137 0.019400069 0.035561999
+## 20:                         avgprice 0.014344709 0.028634704 0.039143783
+## 21:                           cr_pre 0.014202642 0.012878769 0.010063108
+## 22:                  price_sensitive 0.013254857 0.013732056 0.034282790
+## 23:                          uv_pre2 0.009866184 0.023878428 0.023025755
+## 24:                customereval_pre2 0.009512793 0.023686367 0.014241856
+## 25:                ordercanncelednum 0.007786983 0.007395971 0.019699812
+## 26:                 lowestprice_pre2 0.007647376 0.019632453 0.018250043
+## 27:             ordercanceledprecent 0.006708844 0.006725483 0.018420604
+## 28:                    firstorder_bu 0.005541326 0.014781626 0.015691625
+## 29:                      lowestprice 0.005027691 0.019493050 0.009551424
+## 30:                  lowestprice_pre 0.004798664 0.013786701 0.013900733
+## 31:                   cancelrate_pre 0.004406408 0.009735586 0.011768719
+## 32:               deltaprice_pre2_t1 0.003458906 0.021131246 0.013559611
+## 33:                       cancelrate 0.002800655 0.007273567 0.004775712
+## 34:                          hoteluv 0.001626012 0.003055834 0.005287396
+##                              Feature        Gain       Cover   Frequency</code></pre>
 </div>
 </div>
 

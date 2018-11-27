@@ -6,10 +6,20 @@
     <description>Recent content in R on My First Website</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 14 Nov 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 26 Nov 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Logistic Regression &amp; Stepwise Selection</title>
+      <link>/2018/11/26/action/</link>
+      <pubDate>Mon, 26 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/26/action/</guid>
+      <description>算法应用–携程客户流失预测 此次逻辑回归应用的数据依然为携程客户流失数据
+library(tidyverse) library(MASS) library(pROC) # 设置种子 set.seed(1111) # 载入数据 load(&amp;quot;~/Documents/GitHub/customer_loss/data/df_train.RDs&amp;quot;) 建模过程  为方便载入建好的模型 # 载入模型 load(&amp;quot;~/Documents/GitHub/customer_loss/data/lr_aic_back.model&amp;quot;) # 预测概率 pred_train_LR_AIC &amp;lt;- predict(lr_aic_back, df_train, type = &amp;quot;response&amp;quot;) # AUC值 auc(roc(df_train$label, pred_train_LR_AIC)) ## Area under the curve: 0.7007 # 绘制ROC曲线 plot(roc(df_train$label, pred_train_LR_AIC), col=&amp;quot;blue&amp;quot;, ylab = &amp;quot;train_sensitivity&amp;quot;)   为对比变量重要性,将数据标准化后重新建模 df_train_scale &amp;lt;- scale(df_train[, -1]) %&amp;gt;% cbind(df_train[, &amp;quot;label&amp;quot;])  载入标准化后建好的模型 # 载入模型 load(&amp;quot;~/Documents/GitHub/customer_loss/data/lr_scale_aic_back.model&amp;quot;) # 变量重要性 name_scale_aic_back &amp;lt;- names(coef(lr_scale_aic_back)) coef_scale_aic_back &amp;lt;- coef(lr_scale_aic_back) names(coef_scale_aic_back) &amp;lt;- NULL coef_scale_aic_back &amp;lt;- data.</description>
+    </item>
     
     <item>
       <title>Customer Loss--Xgboost</title>

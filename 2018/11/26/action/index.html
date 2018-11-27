@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.47.1" />
+
+
+<title>Logistic Regression &amp; Stepwise Selection - My First Website</title>
+<meta property="og:title" content="Logistic Regression &amp; Stepwise Selection - My First Website">
+
+
+
+  
+
+
+
+
+
+
+<link rel="icon" href="/images/" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/main.css" media="all">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather:400|Lato:400,400italic,700">
+
+<script src="./js/math-code.js"></script>
+<script async
+src="https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/timg.jpeg" 
+         width="50" 
+         height="50" 
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/Wangyazhu16">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">2 min read</span>
+    
+
+    <h1 class="article-title">Logistic Regression &amp; Stepwise Selection</h1>
+
+    
+    <span class="article-date">November 26, 2018</span>
+    
+
+    <div class="article-content">
+      <div class="section level2">
+<h2>算法应用–携程客户流失预测</h2>
+<p>此次逻辑回归应用的数据依然为携程客户流失数据</p>
+<pre class="r"><code>library(tidyverse)
+library(MASS)
+library(pROC)
+
+# 设置种子
+set.seed(1111)
+
+# 载入数据
+load(&quot;~/Documents/GitHub/customer_loss/data/df_train.RDs&quot;)</code></pre>
+<div class="section level3">
+<h3>建模过程</h3>
+</div>
+<div class="section level3">
+<h3>为方便载入建好的模型</h3>
+<pre class="r"><code># 载入模型
+load(&quot;~/Documents/GitHub/customer_loss/data/lr_aic_back.model&quot;)
+
+# 预测概率
+pred_train_LR_AIC &lt;- predict(lr_aic_back, df_train, type = &quot;response&quot;)
+
+# AUC值
+auc(roc(df_train$label, pred_train_LR_AIC))</code></pre>
+<pre><code>## Area under the curve: 0.7007</code></pre>
+<pre class="r"><code># 绘制ROC曲线
+plot(roc(df_train$label, pred_train_LR_AIC), 
+     col=&quot;blue&quot;, 
+     ylab = &quot;train_sensitivity&quot;) </code></pre>
+<p><img src="/post/2018-11-26-logistic-regression_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div class="section level3">
+<h3>为对比变量重要性,将数据标准化后重新建模</h3>
+<pre class="r"><code>df_train_scale &lt;- scale(df_train[, -1]) %&gt;% cbind(df_train[, &quot;label&quot;])</code></pre>
+</div>
+<div class="section level3">
+<h3>载入标准化后建好的模型</h3>
+<pre class="r"><code># 载入模型
+load(&quot;~/Documents/GitHub/customer_loss/data/lr_scale_aic_back.model&quot;)
+
+# 变量重要性
+name_scale_aic_back &lt;- names(coef(lr_scale_aic_back))
+coef_scale_aic_back &lt;- coef(lr_scale_aic_back)
+names(coef_scale_aic_back) &lt;- NULL
+
+coef_scale_aic_back &lt;- data.frame(
+    vars = name_scale_aic_back,
+    beta = coef_scale_aic_back
+    ) %&gt;% 
+    mutate(abs_coef = abs(beta)) %&gt;% 
+    arrange(-abs_coef)
+
+coef_scale_aic_back</code></pre>
+<pre><code>##                                vars         beta    abs_coef
+## 1                       (Intercept) -1.090877469 1.090877469
+## 2                         intervals -0.303154495 0.303154495
+## 3                  ordernum_oneyear  0.253100544 0.253100544
+## 4                     iforderpv_24h  0.243717294 0.243717294
+## 5                  visitnum_oneyear -0.239545030 0.239545030
+## 6                                cr  0.235518604 0.235518604
+## 7                                 h -0.185350887 0.185350887
+## 8                        cityorders  0.089755866 0.089755866
+## 9                        cancelrate  0.088965702 0.088965702
+## 10                      lowestprice -0.086693042 0.086693042
+## 11                     delta_price2  0.084078964 0.084078964
+## 12                          hotelcr  0.081661081 0.081661081
+## 13                          hoteluv -0.076884207 0.076884207
+## 14                              sid -0.064459424 0.064459424
+## 15                           cr_pre  0.063210075 0.063210075
+## 16                businessrate_pre2  0.063171709 0.063171709
+## 17                         avgprice -0.059925933 0.059925933
+## 18                        lastpvgap  0.055242920 0.055242920
+## 19                 lowestprice_pre2 -0.052549346 0.052549346
+## 20                    ctrip_profits  0.051192872 0.051192872
+## 21                     novoters_pre  0.043840721 0.043840721
+## 22                          uv_pre2 -0.041661459 0.041661459
+## 23         historyvisit_avghotelnum -0.041369649 0.041369649
+## 24                  price_sensitive  0.036234687 0.036234687
+## 25                    landhalfhours  0.034746513 0.034746513
+## 26               deltaprice_pre2_t1 -0.021384723 0.021384723
+## 27                       starprefer -0.013198428 0.013198428
+## 28             ordercanceledprecent  0.011950176 0.011950176
+## 29 historyvisit_visit_detailpagenum  0.010735176 0.010735176
+## 30                ordercanncelednum -0.009666662 0.009666662</code></pre>
+</div>
+</div>
+
+    </div>
+  </article>
+
+  
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/9.13.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
+<script src="./js/math-code.js"></script>
+<script async
+src="https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/gml.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
