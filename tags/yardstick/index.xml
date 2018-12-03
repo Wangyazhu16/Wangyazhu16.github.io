@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Yardstick on My First Website</title>
+    <link>/tags/yardstick/</link>
+    <description>Recent content in Yardstick on My First Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 01 Dec 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/yardstick/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Classifier Model Evaluation</title>
+      <link>/2018/12/01/action/</link>
+      <pubDate>Sat, 01 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/12/01/action/</guid>
+      <description>分类器模型评估 分类器根据真实值和预测值都会得到一个混淆矩阵:
+  混淆矩阵 预测值-正 预测值-负    真实值-正 TP FN  真实值-负 FP TN    1.根据混淆矩阵得到的计算指标 1.准确率(accuracy):\[accuracy = \frac{TP + TN}{TP + FN + FP + TN}\] 2.召回率/查全率(recall):\[recall = \frac{TP}{TP +FN}\] 3.精准率/命中率/查准率(precision):\[precision = \frac{TP}{TP +FP}\] 4.覆盖率/敏感度(sensitivity):同召回率 5.负例覆盖率/特异度(specificity):\[specificity = \frac{TN}{TN + FP}\] 6.假阳性率(False Positive Rate | FPR)[ROC曲线横坐标]:\[FPR = \frac{FP}{FP + TN} = 1 - specificity\] 7.真阳性率(True Positive Rate | TPR)[ROC曲线纵坐标]:同召回率/敏感度 8.预测为正比例(depth):\[depth = \frac{TP + FP}{TP + FN + FP + TN}\] 9.</description>
+    </item>
+    
+  </channel>
+</rss>
